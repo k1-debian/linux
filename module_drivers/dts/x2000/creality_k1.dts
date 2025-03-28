@@ -1,0 +1,257 @@
+/dts-v1/;
+
+#include <dt-bindings/input/input.h>
+#include "x2000.dtsi"
+#include <dt-bindings/interrupt-controller/irq.h>
+#include <generated/autoconf.h>
+
+/ {
+	compatible = "ingenic,crealityk1", "ingenic,x2000";
+
+	extclk: extclk {
+		clock-frequency = <24000000>;
+	};
+
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges =<>;
+
+		reserved_memory: reserved_mem@6000000{
+		      compatible = "shared-dma-pool";
+		      reg-64M = <0x03000000 0x1000000>;
+		      reg-128M = <0x06000000 0x2000000>;
+		      reg-256M = <0x0e000000 0x2000000>;
+		};
+	};
+
+	wlreg_on: wlreg-on {
+		compatible = "regulator-fixed";
+		regulator-name = "wlreg_on";
+		gpio = <&gpa 1 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+		enable-active-low;
+		regulator-always-on;
+		regulator-boot-on;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		status = "okay";
+
+		sys_led {
+			label = "sys-led";
+			gpios = <&gpa 13 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+			linux,default-trigger = "heartbeat";
+			default-state = "off";
+		};
+	};
+};
+
+&uart0 {
+	status = "disable";
+};
+
+&uart1 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart1_pc>;
+};
+
+&uart2 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart2_pd>;
+};
+
+&uart3 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart3_pd>;
+};
+
+&uart5 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart5_pa>;
+};
+
+&uart7 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart7_pa>;
+};
+
+&uart9 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart9_pb>;
+};
+
+&cpufreq {
+	status = "okay";
+	operating-points = <
+		/*KHZ uV */
+		1200000	900000
+		750000	900000
+		600000	900000
+		500000	900000
+		400000	900000
+		375000	900000
+		300000	900000
+		200000	900000
+			>;
+
+};
+
+&pinctrl {
+	ingenic,gpa_voltage = <GPIO_VOLTAGE_1V8>;
+	ingenic,gpe_msc_voltage = <GPIO_VOLTAGE_3V3>;
+};
+
+&i2c2 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c2_pb>;
+};
+
+&i2c4 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c4_pc>;
+};
+
+&i2c3 {
+	status = "disable";
+};
+
+&felix {
+	status = "okay";
+	memory-region=<&reserved_memory>;
+};
+
+&helix {
+	status = "okay";
+	memory-region=<&reserved_memory>;
+};
+
+&rotate {
+	status = "okay";
+	memory-region=<&reserved_memory>;
+};
+
+&pdma {
+	status = "okay";
+};
+
+&msc0 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&msc0_8bit>;
+	mmc-hs200-1_8v;
+	cap-mmc-highspeed;
+	non-removable;
+	max-frequency = <100000000>;
+	bus-width = <8>;
+	voltage-ranges = <1800 3300>;
+};
+
+&msc1 {
+	status = "okay";
+	pinctrl-names ="default", "enable", "disable";
+	pinctrl-0 = <&msc1_4bit>;
+	pinctrl-1 = <&rtc32k_enable>;
+	pinctrl-2 = <&rtc32k_disable>;
+
+	max-frequency = <100000000>;
+	bus-width = <4>;
+	voltage-ranges = <1800 3300>;
+	non-removable;
+
+	ingenic,sdio_clk = <1>;
+	keep-power-in-suspend;
+
+	ingenic,removal-manual; /*removal-dontcare, removal-nonremovable, removal-removable, removal-manual*/
+
+	bcmdhd_wlan: bcmdhd_wlan {
+		 compatible = "android,bcmdhd_wlan";
+		 gpio_wl_reg_on = <&gpe 2 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;		 
+		 gpio_wl_host_wake = <&gpd 5 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+	};
+};
+
+&mac0 {
+	pinctrl-names = "default", "reset";
+	pinctrl-0 = <&mac0_rmii_p0_normal>, <&mac0_rmii_p1_normal>, <&mac0_phy_clk>;
+	pinctrl-1 = <&mac0_rmii_p0_rst>, <&mac0_rmii_p1_normal>, <&mac0_phy_clk>;
+	status = "okay";
+	ingenic,rst-gpio = <&gpc 5 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+	ingenic,rst-ms = <10>;
+	ingenic,rst-delay-ms = <15>;
+	ingenic,mac-mode = <RMII>;
+	ingenic,mode-reg = <0xb00000e4>;
+	ingenic,phy-clk-freq = <50000000>;
+};
+
+&dtrng {
+	status = "okay";
+};
+
+&otg {
+	g-use-dma;
+	status = "okay";
+};
+
+&otg_phy {
+	ingenic,drvvbus-gpio = <&gpa 15 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+	status = "okay";
+};
+
+/* Board Sleep GPIO configuration. */
+/* <0 1 2 3 .... 31>, set one of the pin to state.*/
+&gpa {
+	ingenic,gpio-sleep-pullup 	= <>;
+	ingenic,gpio-sleep-pulldown 	= <>;
+	ingenic,gpio-sleep-hiz		= <>;
+	ingenic,gpio-sleep-low		= <>;
+	ingenic,gpio-sleep-high		= <>;
+	ingenic,gpio-sleep-func0    = <>;
+	ingenic,gpio-sleep-func1    = <>;
+	ingenic,gpio-sleep-func2    = <>;
+	ingenic,gpio-sleep-func3    = <>;
+};
+
+&gpb {
+	ingenic,gpio-sleep-pullup 	= <>;
+	ingenic,gpio-sleep-pulldown 	= <>;
+	ingenic,gpio-sleep-hiz		= <>;
+	ingenic,gpio-sleep-low		= <>;
+	ingenic,gpio-sleep-high		= <>;
+	ingenic,gpio-sleep-func0    = <>;
+	ingenic,gpio-sleep-func1    = <>;
+	ingenic,gpio-sleep-func2    = <>;
+	ingenic,gpio-sleep-func3    = <>;
+};
+
+&gpc {
+	ingenic,gpio-sleep-pullup 	= <>;
+	ingenic,gpio-sleep-pulldown 	= <>;
+	ingenic,gpio-sleep-hiz		= <>;
+	ingenic,gpio-sleep-low		= <>;
+	ingenic,gpio-sleep-high		= <>;
+	ingenic,gpio-sleep-func0    = <>;
+	ingenic,gpio-sleep-func1    = <>;
+	ingenic,gpio-sleep-func2    = <>;
+	ingenic,gpio-sleep-func3    = <>;
+};
+
+&gpd {
+	ingenic,gpio-sleep-pullup 	= <>;
+	ingenic,gpio-sleep-pulldown 	= <>;
+	ingenic,gpio-sleep-hiz		= <>;
+	ingenic,gpio-sleep-low		= <>;
+	ingenic,gpio-sleep-high		= <>;
+	ingenic,gpio-sleep-func0    = <>;
+	ingenic,gpio-sleep-func1    = <>;
+	ingenic,gpio-sleep-func2    = <>;
+	ingenic,gpio-sleep-func3    = <>;
+};

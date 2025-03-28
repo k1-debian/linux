@@ -8,6 +8,9 @@ config DT_X2000_MODULE_BASE
 config DT_HALLEY5_V30
        bool "x2000 halley5_v30"
 
+config DT_CREALITY_K1
+       bool "x2000 Creality K1"
+
 config DT_ZEBRA
        bool "x2000 zebra"
 
