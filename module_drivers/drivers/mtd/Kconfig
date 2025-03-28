@@ -1,0 +1,18 @@
+if MTD
+
+config MTD_BLOCK_BBT_RO
+	tristate "Bad block tab based readonly block device access to MTD devices, "
+	depends on BLOCK
+	select MTD_BLKDEVS
+	help
+	  This allows you to mount read-only file systems (such as squashfs)
+	  There is a bad block tab to skip the bad block on nand for readonly use.
+	  It's a sample bad block tab, create at init, so you'd better don't write
+	  the nand at runtime.
+
+config MTD_BLOCK_BBT_RO_BLOCK_SIZE
+	int "block size of /dev/mtdblock_bbt_ro"
+	depends on MTD_BLOCK_BBT_RO
+	default 4096
+
+endif # MTD

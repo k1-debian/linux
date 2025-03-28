@@ -1,0 +1,9 @@
+config INGENIC_RPMSG
+        tristate "ingenic rpmsg support"
+        select RPMSG_VIRTIO
+        default n
+        help
+          Say y or m here to support ingenic rpmsg.
+          This can be either built-in or a loadable module.
+          If unsure say N.
+

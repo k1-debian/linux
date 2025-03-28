@@ -1,0 +1,6 @@
+config DMABUF_HEAPS_RESERVEMEM
+	bool "DMA-BUF Reserve Memory Heap"
+	depends on DMABUF_HEAPS
+	help
+	  Choose this option to enable the reserve memory dmabuf heap. The reserve memory heap
+	  is backed by dma coherence allocate. If in doubt, say Y.

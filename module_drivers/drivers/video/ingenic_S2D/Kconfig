@@ -1,0 +1,7 @@
+config INGENIC_S2D
+	tristate "Ingenic S2D Driver"
+	depends on SOC_X2600 || SOC_AD100
+	default n
+	help
+	  Support for Ingenic simple image 2d operations.
+

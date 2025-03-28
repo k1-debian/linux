@@ -1,0 +1,7 @@
+#
+# JZ_SECURITY driver configuration
+#
+# NOTE:
+#
+config INGENIC_SC
+	bool "Ingenic Security support"

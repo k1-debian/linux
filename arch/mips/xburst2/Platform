@@ -1,0 +1,9 @@
+load-$(CONFIG_MACH_XBURST2)	+= 0xffffffff80010000
+cflags-y			+= -I$(srctree)/module_drivers/include
+cflags-$(CONFIG_MACH_XBURST2)	+= -I$(srctree)/arch/mips/xburst2/core/include
+
+cflags-$(CONFIG_SOC_X2000)	+= -I$(srctree)/arch/mips/xburst2/soc-x2000/include
+cflags-$(CONFIG_SOC_M300)	+= -I$(srctree)/arch/mips/xburst2/soc-m300/include
+cflags-$(CONFIG_SOC_X2600)	+= -I$(srctree)/arch/mips/xburst2/soc-x2600/include
+cflags-$(CONFIG_SOC_AD100)	+= -I$(srctree)/arch/mips/xburst2/soc-ad100/include
+cflags-$(CONFIG_SOC_X2500)	+= -I$(srctree)/arch/mips/xburst2/soc-x2500/include

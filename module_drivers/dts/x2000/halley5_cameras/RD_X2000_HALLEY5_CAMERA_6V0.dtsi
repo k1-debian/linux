@@ -1,0 +1,62 @@
+&i2c3 {
+	status = "okay";
+	clock-frequency = <100000>;
+	timeout = <1000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c3_pa>, <&cim_vic_mclk_pe>;
+
+	/* RD_X2000_HALLEY5_CAMERA_V6.0 */
+	sc230ai_0:sc230ai@30 {
+		status = "ok";
+		compatible = "smartsens,sc230ai";
+		reg = <0x30>;
+
+		avdd-supply = <&cam_avdd>;
+		dvdd-supply = <&cam_dvdd>;
+		dovdd-supply = <&cam_dovdd>;
+		ingenic,pwdn-gpio = <&gpa 10 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+		ingenic,xshutdn-gpio = <&gpa 9 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+		ingenic,efsync-gpio = <&gpa 15 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+		ingenic,led-gpio = <&gpc 24 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+
+		port {
+			sc230ai_ep0:endpoint {
+				remote-endpoint = <&isp0_ep>;
+			};
+		};
+	};
+
+	sc230ai_1:sc230ai@32 {
+		status = "ok";
+		compatible = "smartsens,sc230ai";
+		reg = <0x32>;
+
+		avdd-supply = <&cam_avdd>;
+		dvdd-supply = <&cam_dvdd>;
+		dovdd-supply = <&cam_dovdd>;
+		ingenic,pwdn-gpio = <&gpa 8 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+		ingenic,xshutdn-gpio = <&gpa 11 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+		ingenic,efsync-gpio = <&gpa 12 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+		ingenic,led-gpio = <&gpc 15 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+
+		port {
+			sc230ai_ep1:endpoint {
+				remote-endpoint = <&isp1_ep>;
+			};
+		};
+	};
+};
+
+&isp0_ep {
+	remote-endpoint = <&sc230ai_ep0>;
+	data-lanes = <0 1>;
+	clk-lanes = <2>;
+};
+
+&isp1_ep {
+	remote-endpoint = <&sc230ai_ep1>;
+	data-lanes = <3 4>;
+	clk-lanes = <5>;
+};
+
+

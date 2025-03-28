@@ -1,0 +1,352 @@
+/dts-v1/;
+
+#include <dt-bindings/input/input.h>
+#include "x2600.dtsi"
+#include "tucana_cameras/X2600_TUCANA_DVP.dtsi"
+
+/ {
+	compatible = "ingenic,x2660-evb-board", "ingenic,x2660";
+
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges =<>;
+
+		reserved_memory: reserved_mem@2000000{
+		      compatible = "shared-dma-pool";
+		      reg = <0x02000000 0x800000>;
+		};
+	 };
+
+#if 1
+		riscv_mcu_ram: riscv_mcu_ram@7F00000{
+		       compatible = "shared-dma-pool";
+		       reg = <0x07F00000 0x50000>;
+		       no-map;
+
+		};
+
+		vdev0buffer: vdev0buffer@7F50000{
+		     compatible = "shared-dma-pool";
+		     reg = <0x07F50000 0x8000>;
+		     no-map;
+		};
+
+		vdev0vring0: vdev0vring0@12400000{
+		     compatible = "shared-dma-pool";
+		     reg = <0x12400000 0x1000>;
+		     no-map;
+		};
+
+		vdev0vring1: vdev0vring1@12401000{
+		     compatible = "shared-dma-pool";
+		     reg = <0x12401000 0x1000>;
+		     no-map;
+		};
+#endif
+	};
+};
+
+#if 1
+&riscv {
+	status = "okay";
+	memory-region=<&vdev0buffer>, <&vdev0vring0>, <&vdev0vring1>;
+	load-addr=<0x07f00000>;
+};
+#endif
+
+&uart0 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart0_pe>;
+};
+
+&uart2 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart2_pd>;
+};
+
+//&pwm {
+//     ingenic,pwm-outputs = <0>; /* <0 - 15> select which pwms are really used */
+//}
+
+&otg {
+	dr_mode = "otg"; // host,peripheral,otg
+	device-using-dma = <1>;
+	status = "okay";
+};
+
+&usb {
+	device-using-dma = <1>;
+	status = "okay";
+};
+
+&otg_phy {
+	status = "okay";
+	ingenic,drvvbus-gpio = <&gpe 1 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+};
+
+&usb_phy {
+	status = "okay";
+	ingenic,drvvbus-gpio = <&gpe 0 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+};
+
+&msc0 {
+	status = "okay";
+	/*mmc-hs200-1_8v;*/
+	pinctrl-names ="default";
+	pinctrl-0 = <&msc0_4bit>;
+	cap-mmc-highspeed;
+	non-removable;
+	max-frequency = <50000000>;
+	bus-width = <4>;
+	non-removable;
+	voltage-ranges = <1800 3300>;
+
+	/* special property */
+	ingenic,wp-gpios = <0>;
+	ingneic,cd-gpios = <0>;
+	ingenic,rst-gpios = <0>;
+};
+
+&msc1 {
+	status = "okay";
+	pinctrl-names ="default";
+	pinctrl-0 = <&msc1_4bit1>;
+	cap-sd-highspeed;
+	max-frequency = <50000000>;
+	bus-width = <4>;
+	voltage-ranges = <1800 3300>;
+
+	/* cd-inverted; */
+	cd-gpios = <&gpc 12 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+	/* special property */
+	ingenic,rst-gpios = <0>;
+};
+
+
+&mac0 {
+	pinctrl-names = "default", "reset";
+    pinctrl-0 = <&mac0_rmii_p0_normal>, <&mac0_rmii_p1_normal>,<&mac0_phy_clk>;
+	pinctrl-1 = <&mac0_rmii_p0_rst>, <&mac0_rmii_p1_normal>, <&mac0_phy_clk>;
+	status = "okay";
+	ingenic,rst-gpio = <&gpc 13 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+	ingenic,rst-ms = <10>;
+	ingenic,mac-mode = <RMII>;
+	ingenic,mode-reg = <0xb00000e4>;
+	ingenic,phy-clk-freq = <50000000>;
+};
+
+
+&sfc {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&sfc_pd1>;
+	ingenic,sfc-max-frequency = <200000000>;
+	ingenic,sfc-init-frequency= <40000000>;
+	ingenic,use_ofpart_info  = /bits/ 8 <0>;
+	ingenic,spiflash_param_offset = <0>;
+
+	nandflash@1 {
+		partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		/* spi nand flash partition */
+		partition@0 {
+			label = "uboot";
+			reg = <0x0000000 0x100000>;
+		/*read-only;*/
+		};
+		partition@100000 {
+			label = "kernel";
+			reg = <0x100000 0x800000>;
+		};
+		partition@900000 {
+			label = "rootfs";
+			reg = <0x900000 0xf700000>;
+		};
+		};
+	};
+
+};
+
+&aic {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&aic_pc>;
+};
+
+&i2c0{
+	status = "disable";
+	clock-frequency = <100000>;
+	// timeout = <1000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c0_pc>;
+
+	wm8594: wm8594@1a{
+		compatible = "wlf,wm8594";
+		reg = <0x1a>;
+		status = "disable";
+		reset-gpios = <&gpc 20 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+	};
+};
+
+&dmic {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&dmic_pc_2ch>;
+};
+
+&pcm {
+	status = "okay";
+	ingenic,pcm-master-mode = <1>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcm_pc>;
+};
+
+&spi0 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi0_pb>;
+	spi-max-frequency = <54000000>;
+	num-cs = <2>;
+	/* cs-gpios = <0>, <0>; */
+	/* cs-gpios = <&gpb 17 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>, <&gpb 16 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>; */
+	ingenic,chnl = <0>;
+	ingenic,allow_cs_same = <1>;
+	ingenic,bus_num = <0>;
+	ingenic,has_dma_support = <0>;
+	ingenic,spi-src-clk = <1>;/*0.ext; 1.ssi*/
+
+	/* Add SPI interface device */
+	spidev: spidev@0 {
+		compatible = "rohm,dh2228fv";
+		reg = <0>;
+		spi-max-frequency = <10000000>;
+	};
+};
+
+&spi_slv0 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi_slv_pb>;
+	ingenic,has_dma_support = <0>;
+};
+/*
+&efuse {
+	status = "disabled";
+	ingenic,efuse-en-gpio = <&gpe 2 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+};
+*/
+
+/ {
+
+	extclk: extclk {
+		clock-frequency = <24000000>;
+	};
+
+	gpio_keys: gpio_keys {
+		   compatible = "gpio-keys";
+
+		   power {
+			   label = "Power";
+			   linux,code = <KEY_POWER>;
+			   gpios = <&gpa 31 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+			   gpio-key,wakeup;
+		   };
+	   };
+
+	dump_pcm_codec:dump_pcm_codec{
+		compatible = "ingenic,pcm-dump-codec";
+		status = "okay";
+	};
+
+	sound_x2660_cdc {
+		status = "disable";
+		compatible = "ingenic,x2660-sound";
+		ingenic,model = "x2660";
+		ingenic,dai-link = "i2s-ecodec", "i2s-icodec", "dmic", "i2s-tloop";
+		ingenic,stream = "i2s-ecodec", "i2s-icodec", "dmic", "i2s-tloop";
+		ingenic,cpu-dai = <&i2s>, <&i2s>, <&dmic>, <&i2s_tloop>;
+		ingenic,platform = <&aic>, <&aic>, <&dmic>, <&i2s_tloop>;
+		ingenic,codec =  <&wm8594>, <&icodec>, <&dmic>, <&dump_pcm_codec>;
+		ingenic,codec-dai = "wm8594-hifi", "icodec", "dmic-dump-codec", "pcm-dump";
+		ingenic,audio-routing = "Speaker", "HPOUTL", "DACL", "MICBIAS" ,
+			"ADCL",  "MICL",
+			"ADCR",  "MICR";
+	};
+
+	sound_x2660_pcm_cdc {
+		status = "okay";
+		compatible = "ingenic,x2660-sound";
+		ingenic,model = "x2660";
+		ingenic,dai-link = "pcm", "i2s-icodec", "dmic", "i2s-tloop";
+		ingenic,stream = "pcm", "i2s-icodec", "dmic", "i2s-tloop";
+		ingenic,cpu-dai = <&pcm>, <&i2s>, <&dmic>, <&i2s_tloop>;
+		ingenic,platform = <&pcm>, <&aic>, <&dmic>, <&i2s_tloop>;
+		ingenic,codec =  <&dump_pcm_codec>, <&icodec>, <&dmic>, <&dump_pcm_codec>;
+		ingenic,codec-dai = "pcm-dump", "icodec", "dmic-dump-codec", "pcm-dump";
+		ingenic,audio-routing = "Speaker", "HPOUTL", "DACL", "MICBIAS" ,
+			"ADCL",  "MICL",
+			"ADCR",  "MICR";
+	};
+};
+
+&jpegd {
+	    status = "okay";
+};
+
+&jpege {
+	    status = "okay";
+};
+
+&felix {
+	status = "disable";
+};
+
+&pdma {
+	status = "okay";
+};
+
+&pdma1 {
+	status = "disable";
+};
+
+&dtrng {
+	status = "okay";
+};
+
+&sadc{
+	status = "disable";
+	pinctrl-names = "default";
+	pinctrl-0 = <&aux_all_pe>;
+	seq1 = <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15>;
+	/* seq1的连续转换间隔时间 单位 ms*/
+	seq1-cont-interval = <10>;
+	ingenic,has_dma_support = <0>;
+
+};
+
+&can0 {
+	status = "disable";
+	pinctrl-names = "default";
+	pinctrl-0 = <&can0_pin>;
+	ingenic,clk-freq = <24000000>;
+};
+
+&cim {
+	status = "okay";
+	memory-region=<&reserved_memory>;
+};
+
+#ifdef CONFIG_STAGE_KD050WVFPA029
+#include "x2660_evb_lcd/X2660_EVB_RGB_LCD_KD050.dtsi"
+#endif
+

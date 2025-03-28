@@ -1,0 +1,24 @@
+choice
+	prompt "device tree select for X26xx boards"
+	depends on SOC_X2600
+
+config DT_X2600_MODULE_BASE
+	bool "x2600 module base"
+config DT_X2660_EVB
+	bool "x2660 evb board"
+config DT_X2600_TUCANA
+	bool "x2600 tucana board"
+config DT_X2600_HALLEY7
+	bool "x2600_halley7 v1.0/v1.1 board"
+config DT_X2670_HARE
+	bool "x2670_hare board"
+config DT_XBURST2_EXTERNAL_BOARD
+	bool "xburst2 external board."
+endchoice
+
+config DT_X2600_MODULE_BASE_DTS_FILE
+	string "dts file for X2600 module driver"
+	depends on DT_X2600_MODULE_BASE
+	default "x2600_module_base.dts"
+	help
+		the dts file location is arch/mips/boot/dts/ingenic/

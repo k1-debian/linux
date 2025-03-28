@@ -1,0 +1,44 @@
+&dpu {
+    status = "okay";
+    ingenic,disable-rdma-fb = <0>;
+    ingenic,rot_angle = <0>;
+    /*Defines the init state of composer fb export infomations.*/
+    ingenic,layer-exported = <1 0 0 0>;
+    ingenic,layer-frames   = <1 1 2 2>;
+    ingenic,layer-framesize = <1280 800>, <1024 600>, <320 240>, <320 240>;   /*Max framesize for each layer.*/
+    layer,color_mode        = <0 0 0 0>;                                    /*src fmt,*/
+    layer,src-size          = <1280 800>, <1024 600>, <320 240>, <240 200>; /*Layer src size should smaller than framesize*/
+    layer,target-size       = <1280 800>, <1024 600>, <240 200>, <240 200>;  /*Target Size should smaller than src_size.*/
+    layer,target-pos        = <0 0>, <0 0>, <0 0>, <0 0>; /*target pos , the start point of the target panel.*/
+    layer,enable            = <1 0 0 0>;                                    /*layer enabled or disabled.*/
+    ingenic,logo-pan-layer  = <0>;                                          /*on which layer should init logo pan on.*/
+    port {
+	        dpu_out_ep: endpoint {
+				remote-endpoint = <&panel_hc101i35_ep>;
+		    };
+	};
+};
+
+/ {
+    display-dpi {
+	        compatible = "simple-bus";
+	        #interrupt-cells = <1>;
+	        #address-cells = <1>;
+	        #size-cells = <1>;
+	        ranges = <>;
+	        panel_mtf070ws {
+			       compatible = "ingenic,hc101i35";
+			       status = "okay";
+			       ingenic,lcd-pwm-gpio = <&gpe 2 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+			       ingenic,lcd-pwr-gpio = <&gpc 15 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+			       ingenic,vdd-en-gpio = <&gpc 8 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+			       port {
+				   	panel_hc101i35_ep: endpoint {
+				   	remote-endpoint = <&dpu_out_ep>;
+				   	};
+				   };
+			};
+	
+	    };
+
+};

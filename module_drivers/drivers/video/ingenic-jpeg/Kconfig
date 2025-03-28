@@ -1,0 +1,18 @@
+menuconfig JZ_JPEG
+	bool "[JPEG] JZ jpeg unit"
+	depends on SOC_X2600 || SOC_AD100
+	default n
+
+config INGENIC_JPEG_DEC
+	tristate "Ingenic jpeg decoder Driver"
+	depends on JZ_JPEG
+	default n
+	help
+	  Support for Ingenic jpeg-dec operations.
+
+config INGENIC_JPEG_ENC
+	tristate "Ingenic jpeg encoder Driver"
+	depends on JZ_JPEG
+	default n
+	help
+	  Support for Ingenic jpeg-enc operations.

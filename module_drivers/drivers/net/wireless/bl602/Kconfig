@@ -1,0 +1,5 @@
+config WIRELESS_BL602
+	tristate "BL602 FullMAC wireless cards support"
+	help
+	  This module adds support for wireless adapters based on
+	  BL602 FullMAC chipset.

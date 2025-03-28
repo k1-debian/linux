@@ -1,0 +1,17 @@
+config INGENIC_SADC
+	tristate "[X2600 SADC] X2600 sadc iio driver."
+	depends on SOC_X2600
+	select IIO
+	select IIO_BUFFER
+	select IIO_TRIGGER
+	select IIO_TRIGGERED_BUFFER
+	select IIO_SYSFS_TRIGGER
+	default n
+	help
+	    Say yes here to build support for x2600 sadc device .
+config ADC_DEBUG
+	tristate "[DEBUG] DEBUG sadc iio driver."
+	default n
+	help
+		Say yes here to DEBUG x2600 sadc device.
+

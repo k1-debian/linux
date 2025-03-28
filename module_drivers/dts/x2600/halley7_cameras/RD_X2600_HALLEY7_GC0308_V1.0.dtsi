@@ -1,0 +1,40 @@
+&i2c3 {
+	status = "okay";
+	clock-frequency = <100000>;
+	timeout = <1000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c3_pe>;
+
+	gc0308:gc0308@21{
+		status = "okay";
+		compatible = "gc0308";
+		reg = <0x21>;
+		pinctrl-names = "default","cim";
+		pinctrl-0 = <&cim_mclk_pa>, <&cim_pa>;
+
+		resetb-gpios = <&gpe 7 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+		pwdn-gpios = <&gpe 8 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+
+		port {
+			gc0308_ep0:endpoint {
+				remote-endpoint = <&cim_0>;
+			};
+		};
+	};
+};
+
+&cim {
+	status = "okay";
+	port {
+		cim_0: endpoint@0 {
+			remote-endpoint = <&gc0308_ep0>;
+			bus-width = <8>;
+			data-shift = <0>;	/* Lines 9:0 are used */
+
+			hsync-active = <1>;	/* Active high */
+			vsync-active = <1>;	/* Active high */
+			data-active = <1>;	/* Active high */
+			pclk-sample = <0>;	/* Rising */
+		};
+	};
+};

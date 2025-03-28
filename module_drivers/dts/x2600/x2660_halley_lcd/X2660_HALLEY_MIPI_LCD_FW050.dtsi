@@ -1,0 +1,127 @@
+&dpu {
+	status = "okay";
+	ingenic,disable-rdma-fb = <1>;
+	ingenic,rot_angle = <0>;
+	/*Defines the init state of composer fb export infomations.*/
+	ingenic,layer-exported = <1 1 0 0>;
+	ingenic,layer-frames   = <2 2 2 2>;
+	ingenic,layer-framesize = <720 1280>, <720 1280>, <320 240>, <320 240>;   /*Max framesize for each layer.*/
+	layer,color_mode	= <0 0 0 0>;					/*src fmt,*/
+	layer,src-size       	= <720 1280>, <720 1280>, <320 240>, <240 200>;	/*Layer src size should smaller than framesize*/
+	layer,target-size	= <720 1280>, <720 640>, <160 240>, <240 200>;	/*Target Size should smaller than src_size.*/
+	layer,target-pos	= <0 0>, <0 640>, <340 480>, <100 980>;	/*target pos , the start point of the target panel.*/
+	layer,enable		= <1 1 1 1>;					/*layer enabled or disabled.*/
+	ingenic,logo-pan-layer	= <0>;						/*on which layer should init logo pan on.*/
+	memory-region=<&reserved_memory>;
+	lane2_pn_swap;
+	lane3_pn_swap;
+	port {
+		dpu_out_ep: endpoint {
+			remote-endpoint = <&panel_fw050_ep>;
+	    };
+	};
+};
+
+/ {
+	display-dbi {
+		compatible = "simple-bus";
+		#interrupt-cells = <1>;
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges = <>;
+		panel_fw050 {
+			compatible = "ingenic,fw050";
+			status = "okay";
+			pinctrl-names = "default";
+			ingenic,vdd-en-gpio = <&gpc 8 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+			ingenic,rst-gpio = <&gpc 15 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+			/*ingenic,lcd-pwm-gpio = <&gpe 2 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;*/
+			port {
+				panel_fw050_ep: endpoint {
+					remote-endpoint = <&dpu_out_ep>;
+				};
+			};
+		};
+	};
+
+	backlight {
+		compatible = "pwm-backlight";
+	        pinctrl-names = "default";
+	        pinctrl-0 = <&pwm10_pe>;
+		pwms = <&pwm 10 1000000>; /* arg1: pwm channel id [0~15]. arg2: period in ns. */
+		brightness-levels = <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15>;
+		default-brightness-level = <10>;
+	};
+
+};
+
+&pinctrl {
+	touchscreen_pins:touchscreen-pins {
+		touchscreen_int_out_high:touchscreen-int-out-high {
+			ingenic,pinmux = <&gpc 18 18>;
+			ingenic,pinmux-funcsel = <PINCTL_FUNCHILVL>;
+		};
+		touchscreen_int_out_low:touchscreen-int-out-low {
+			ingenic,pinmux = <&gpc 18 18>;
+			ingenic,pinmux-funcsel = <PINCTL_FUNCLOLVL>;
+		};
+		touchscreen_int_input:touchscreen-int-input {
+			ingenic,pinmux = <&gpc 18 18>;
+			ingenic,pinmux-funcsel = <PINCTL_FUNCINPUT_FE>;
+		};
+		touchscreen_default:touchscreen-default {
+			ingenic,pinmux = <&gpc 18 18>;
+			ingenic,pinmux-funcsel = <PINCTL_FUNCINPUT>;
+		};
+	};
+};
+
+&i2c2{
+	status = "okay";
+	clock-frequency = <100000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c2_pc>;
+
+	goodix@14{
+		compatible = "goodix,gt9xx"; /* do not modify */
+		reg = <0x14>; /* do not modify */
+		reset-gpios = <&gpc 17 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>; /* RST pin */
+		irq-gpios = <&gpc 18 IRQ_TYPE_EDGE_FALLING INGENIC_GPIO_NOBIAS>; /* INT pin */
+		goodix,driver-send-cfg = <1>;
+		touchscreen-size-x = <1280>;
+		touchscreen-size-y = <720>;
+		goodix,slide-wakeup = <0>;
+		goodix,type-a-report = <1>;
+		goodix,resume-in-workqueue = <0>;
+		goodix,int-sync = <1>;
+		goodix,swap-x2y = <0>;
+		goodix,auto-update-cfg = <0>;
+		goodix,power-off-sleep = <0>;
+		goodix,pen-suppress-finger = <0>;
+		irq-flags = <2>; /* 1 rising, 2 falling */
+		pinctrl-names = "default", "int-output-high", "int-output-low", "int-input";
+		pinctrl-0 = <&touchscreen_default>;
+		pinctrl-1 = <&touchscreen_int_out_high>;
+		pinctrl-2 = <&touchscreen_int_out_low>;
+		pinctrl-3 = <&touchscreen_int_input>;
+		goodix,cfg-group0 = [
+			00 D0 02 00 05 0A 05 00 01 08 28
+			05 50 32 03 05 00 00 00 00 00 00
+			00 00 00 00 00 87 28 09 17 15 31
+			0D 00 00 02 9B 03 25 00 00 00 00
+			00 03 64 32 00 00 00 0F 36 94 C5
+			02 07 00 00 04 9B 11 00 7B 16 00
+			64 1C 00 50 25 00 42 2F 00 42 00
+			00 00 00 00 00 00 00 00 00 00 00
+			00 00 00 00 00 00 00 00 00 00 00
+			00 00 00 00 00 00 00 00 00 00 00
+			00 00 12 10 0E 0C 0A 08 06 04 02
+			FF FF FF FF FF 00 00 00 00 00 00
+			00 00 00 00 00 00 00 00 00 00 26
+			24 22 21 20 1F 1E 1D 00 02 04 06
+			08 0A 0C FF FF FF FF FF FF FF FF
+			FF FF FF 00 00 00 00 00 00 00 00
+			00 00 00 00 00 00 00 00 CF 01];
+	};
+};
+

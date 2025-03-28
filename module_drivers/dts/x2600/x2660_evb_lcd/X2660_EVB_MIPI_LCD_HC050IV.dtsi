@@ -1,0 +1,43 @@
+&dpu {
+    status = "okay";
+    ingenic,disable-rdma-fb = <0>;
+    ingenic,rot_angle = <0>;
+    /*Defines the init state of composer fb export infomations.*/
+    ingenic,layer-exported = <0 0 0 0>;
+    ingenic,layer-frames   = <1 1 2 2>;
+    ingenic,layer-framesize = <1080 1920>, <1024 600>, <320 240>, <320 240>;   /*Max framesize for each layer.*/
+    layer,color_mode        = <0 0 0 0>;                                    /*src fmt,*/
+    layer,src-size          = <1080 1920>, <1024 600>, <320 240>, <240 200>; /*Layer src size should smaller than framesize*/
+    layer,target-size       = <1080 1920>, <1024 600>, <240 200>, <240 200>;  /*Target Size should smaller than src_size.*/
+    layer,target-pos        = <0 0>, <0 0>, <0 0>, <0 0>; /*target pos , the start point of the target panel.*/
+    layer,enable            = <0 0 0 0>;                                    /*layer enabled or disabled.*/
+    ingenic,logo-pan-layer  = <0>;                                          /*on which layer should init logo pan on.*/
+    port {
+	        dpu_out_ep: endpoint {
+						            remote-endpoint = <&panel_hc050iv_ep>;
+						        };
+	    };
+};
+
+/ {
+    display-dpi {
+	        compatible = "simple-bus";
+	        #interrupt-cells = <1>;
+	        #address-cells = <1>;
+	        #size-cells = <1>;
+	        ranges = <>;
+	        panel_hc050 {
+			        compatible = "ingenic,hc050iv";
+			        status = "okay";
+			        //pinctrl-names = "default";
+			        //pinctrl-0 = <&smart_lcd_pd_te>;
+			        //ingenic,rst-gpio = <&gpa 5 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+			        //ingenic,lcd-pwm-gpio = <&gpa 4 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+			        port {
+					        panel_hc050iv_ep: endpoint {
+						    remote-endpoint = <&dpu_out_ep>;
+					};
+				};
+			};
+	    };
+};

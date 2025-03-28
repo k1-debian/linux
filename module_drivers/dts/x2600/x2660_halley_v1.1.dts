@@ -1,0 +1,354 @@
+/dts-v1/;
+
+#include <dt-bindings/input/input.h>
+#include "x2600.dtsi"
+#include <dt-bindings/interrupt-controller/irq.h>
+#include <generated/autoconf.h>
+
+/ {
+	compatible = "ingenic,x2660-halley-board-v1.1", "ingenic,x2660";
+	chosen {
+		bootargs = "console=ttyS0,115200 mem=128M@0x0 ip=off init=/linuxrc ubi.mtd=2 root=ubi0:rootfs ubi.mtd=3 rootfstype=ubifs rw flashtype=nand";
+		/*bootargs = "console=ttyS0,115200 mem=128M@0x0 ip=off init=/linuxrc rootfstype=jffs2 root=/dev/mtdblock2 rw flashtype=nor";*/
+	};
+
+	wl_vccio: wl-regulator {
+		  compatible = "regulator-fixed";
+		  regulator-name = "wl_vccio";
+		  gpio = <&gpe 0 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+		  enable-active-high;
+	};
+
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges =<>;
+
+		reserved_memory: reserved_mem@6000000{
+		      compatible = "shared-dma-pool";
+		      reg = <0x06000000 0x2000000>;
+		};
+
+		vdev0vring0: vdev0vring0@12400000{
+		    compatible = "shared-dma-pool";
+			reg = <0x12400000 0x1000>;
+			no-map;
+		};
+
+		vdev0vring1: vdev0vring1@12401000{
+		    compatible = "shared-dma-pool";
+			reg = <0x12401000 0x1000>;
+			no-map;
+		};
+
+		vdev0buffer: vdev0buffer@07F50000{
+			 compatible = "shared-dma-pool";
+			 reg = <0x07F50000 0x8000>;
+		 };
+
+		riscv_mcu_ram: riscv_mcu_ram@07F00000{
+			 compatible = "shared-dma-pool";
+			 reg = <0x07F00000 0x50000>;
+
+		 };
+	};
+};
+
+&riscv {
+	status = "okay";
+	memory-region=<&vdev0buffer &vdev0vring0 &vdev0vring1>;
+	load-addr=<0x07f00000>;
+};
+
+&uart0 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart0_pe>;
+};
+
+&uart1 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart1_pc>;
+};
+
+&otg {
+	dr_mode = "otg"; // host,peripheral,otg
+	device-using-dma = <1>;
+	status = "okay";
+};
+
+&usb {
+	device-using-dma = <1>;
+	status = "okay";
+};
+
+&otg_phy {
+	status = "okay";
+};
+
+&usb_phy {
+	status = "okay";
+};
+
+&msc0 {
+	status = "okay";
+	/*mmc-hs200-1_8v;*/
+	pinctrl-names ="default";
+	pinctrl-0 = <&msc0_4bit>;
+
+	cap-mmc-highspeed;
+	max-frequency = <50000000>;
+	bus-width = <4>;
+	non-removable;
+	voltage-ranges = <1800 3300>;
+
+	ingenic,sdio_clk = <1>;
+	keep-power-in-suspend;
+
+	/* special property */
+	ingenic,wp-gpios = <0>;
+	ingneic,cd-gpios = <0>;
+	ingenic,rst-gpios = <0>;
+	ingenic,removal-manual; /*removal-dontcare, removal-nonremovable, removal-removable, removal-manual*/
+
+	bcmdhd_wlan: bcmdhd_wlan {
+		 compatible = "android,bcmdhd_wlan";
+		 wl_vccio-supply = <&wl_vccio>;
+		 ingenic,sdio-irq = <&gpd 12 IRQ_TYPE_LEVEL_HIGH INGENIC_GPIO_NOBIAS>;
+		 ingenic,sdio-reset = <&gpc 0 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+	};
+};
+
+
+&sfc {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&sfc_pd1>;
+	ingenic,sfc-max-frequency = <200000000>;
+	ingenic,sfc-init-frequency= <40000000>;
+	ingenic,use_ofpart_info  = /bits/ 8 <0>;
+	ingenic,spiflash_param_offset = <0>;
+
+	nandflash@1 {
+		partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		/* spi nand flash partition */
+		partition@0 {
+			label = "uboot";
+			reg = <0x0000000 0x100000>;
+		/*read-only;*/
+		};
+		partition@100000 {
+			label = "kernel";
+			reg = <0x100000 0x800000>;
+		};
+		partition@900000 {
+			label = "rootfs";
+			reg = <0x900000 0xf700000>;
+		};
+		};
+	};
+
+};
+
+&aic {
+	status = "okay";
+};
+
+&dmic {
+	status = "disable";
+	pinctrl-names = "default";
+	pinctrl-0 = <&dmic_pc_2ch>;
+};
+
+&i2c3 {
+	clock-frequency = <100000>;
+	pinctrl-0 = <&i2c3_pe>;
+	timeout = <1000>;
+	pinctrl-names = "default";
+	status = "okay";
+
+	rtc_pcf8563:rtc_pcf8563@51{
+		compatible = "nxp,pcf8563";
+		reg = <0x51>;
+		status = "ok";
+	    };
+};
+
+&spi0 {
+	status = "disabled";
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi0_pb>;
+	spi-max-frequency = <54000000>;
+	num-cs = <2>;
+	/* cs-gpios = <0>, <0>; */
+	/* cs-gpios = <&gpb 17 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>, <&gpb 16 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>; */
+	ingenic,chnl = <0>;
+	ingenic,allow_cs_same = <1>;
+	ingenic,bus_num = <0>;
+	ingenic,has_dma_support = <0>;
+	ingenic,spi-src-clk = <1>;/*0.ext; 1.ssi*/
+
+	/* Add SPI interface device */
+	spidev: spidev@0 {
+		compatible = "rohm,dh2228fv";
+        	reg = <0>;
+		spi-max-frequency = <10000000>;
+	};
+};
+
+&spi_slv0 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi_slv_pb>;
+	ingenic,has_dma_support = <0>;
+};
+
+&efuse {
+	status = "disabled";
+	ingenic,efuse-en-gpio = <&gpe 1 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+};
+
+&dtrng {
+	status = "okay";
+};
+
+&tcu0 {
+	status = "disable";
+};
+
+&tcu1 {
+	status = "disable";
+};
+
+// pcm的复用引脚为pc00 - pc03，在使用时注意引脚复用不要冲突，尤其是i2c0_pc和i2c1_pc
+&pcm {
+	status = "disable";
+	ingenic,pcm-master-mode = <1>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcm_pc>;
+};
+
+/ {
+
+	extclk: extclk {
+		clock-frequency = <24000000>;
+	};
+
+	gpio_keys: gpio_keys {
+		   compatible = "gpio-keys";
+
+		   bootsel1 {
+			   label = "bootsel1";
+			   linux,code = <KEY_BACK>;
+			   gpios = <&gpd 15 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+			   gpio-key,wakeup;
+		   };
+	};
+
+	/*
+	 * gpd 14 bt wakeup host
+	 * gpd 13 host wakeup bt
+	 */
+	bt_power {
+		compatible = "ingenic,bt_power";
+		ingenic,reg-on-gpio = <&gpc 1 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+		ingenic,wake-gpio = <&gpd 14 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+		status = "okay";
+	};
+
+	watchdog {
+		compatible = "sgm820-wdt";
+		ingenic,sgm820-wdi = <&gpc 7 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+		status = "okay";
+	};
+
+	dump_pcm_codec:dump_pcm_codec{
+		compatible = "ingenic,pcm-dump-codec";
+		status = "okay";
+	};
+
+	sound_x2660_cdc {
+		status = "okay";
+		compatible = "ingenic,x2660-halley-sound";
+		ingenic,model = "x2660";
+		ingenic,dai-link = "pcm", "i2s-icodec", "i2s-tloop", "dmic";
+		ingenic,stream = "pcm", "i2s-icodec", "i2s-tloop", "dmic";
+		ingenic,cpu-dai = <&pcm>, <&i2s>, <&i2s_tloop>, <&dmic>;
+		ingenic,platform = <&pcm>, <&aic>, <&i2s_tloop>, <&dmic>;
+		ingenic,codec =  <&dump_pcm_codec>, <&icodec>, <&dump_pcm_codec>, <&dmic>;
+		ingenic,codec-dai = "pcm-dump", "icodec", "pcm-dump", "dmic-dump-codec";
+		ingenic,audio-routing = "Speaker", "HPOUTL", "DACL", "MICBIAS" ,
+			"ADCL",  "MICL",
+			"ADCR",  "MICR";
+		ingenic,spken-gpio = <&gpc 14 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+	};
+
+	spi_gpio {
+		status = "disabled";
+		compatible = "spi-gpio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		/*ranges;*/
+		gpio-sck = <&gpd 0 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+		gpio-miso = <&gpd 2 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+		gpio-mosi = <&gpd 1 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+		cs-gpios = <&gpd 5 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+		num-chipselects = <1>;
+		/* clients */
+		spidev1: spidev1@0 {
+			compatible = "rohm,dh2228fv";
+			reg = <0>;
+			spi-max-frequency = <500000>;
+		};
+	};
+};
+
+
+&icodec {
+    dac2adc_enable = <0>;
+};
+
+&jpegd {
+	status = "okay";
+};
+
+&jpege {
+	status = "okay";
+};
+
+&felix {
+	status = "okay";
+	memory-region=<&reserved_memory>;
+};
+
+&rotate {
+	status = "okay";
+};
+
+&pdma {
+	status = "okay";
+};
+
+&pdma1 {
+	status = "okay";
+};
+
+
+#ifdef CONFIG_STAGE_FW050
+#include "x2660_halley_lcd/X2660_HALLEY_MIPI_LCD_FW050.dtsi"
+#endif
+
+
+#ifdef CONFIG_STAGE_HC050IG40031
+#include "x2660_halley_lcd/X2660_HALLEY_RGB_LCD_HC050IG.dtsi"
+#endif
+
+#ifdef CONFIG_STAGE_ZC50289HSHD02
+#include "x2660_halley_lcd/X2660_HALLEY_MIPI_LCD_ZC50289HSHD02.dtsi"
+#endif
+
+

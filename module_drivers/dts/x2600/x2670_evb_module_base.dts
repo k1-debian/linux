@@ -1,0 +1,147 @@
+/dts-v1/;
+
+#include <dt-bindings/input/input.h>
+#include "x2600.dtsi"
+#include <dt-bindings/interrupt-controller/irq.h>
+#include <generated/autoconf.h>
+
+/ {
+	compatible = "ingenic,x2600";
+	/*chosen {
+		bootargs = "console=ttyS0,115200 mem=128M@0x0 ip=off init=/linuxrc ubi.mtd=2 root=ubi0:rootfs ubi.mtd=3 rootfstype=ubifs rw flashtype=nand";
+	};*/
+
+};
+
+&uart0 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart0_pe>;
+};
+
+&uart1 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart1_pb>;
+};
+
+&uart2 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart2_pd>;
+};
+
+&otg {
+	dr_mode = "otg"; // host,peripheral,otg
+	status = "okay";
+};
+
+&usb {
+	status = "okay";
+};
+
+&otg_phy {
+	status = "okay";
+};
+
+&usb_phy {
+	status = "okay";
+};
+
+&pinctrl {
+	ingenic,gpa_voltage = <GPIO_VOLTAGE_3V3>;
+	ingenic,gpe_msc_voltage = <GPIO_VOLTAGE_3V3>;
+};
+
+&sfc {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&sfc_pd1>;
+	ingenic,sfc-max-frequency = <200000000>;
+	ingenic,sfc-init-frequency= <40000000>;
+	ingenic,use_ofpart_info  = /bits/ 8 <0>;
+	ingenic,spiflash_param_offset = <0>;
+
+};
+
+&tcu0 {
+	status = "disable";
+};
+
+&tcu1 {
+	status = "disable";
+};
+
+/ {
+
+	extclk: extclk {
+		clock-frequency = <24000000>;
+	};
+};
+
+&jpegd {
+    status = "okay";
+};
+
+&jpege {
+    status = "okay";
+};
+
+&felix {
+	status = "okay";
+};
+
+&pdma {
+	status = "okay";
+};
+
+&pdma1 {
+	status = "okay";
+};
+
+/* Board Sleep GPIO configuration. */
+/* <0 1 2 3 .... 31>, set one of the pin to state.*/
+&gpa {
+	ingenic,gpio-sleep-pullup 	= <>;
+	ingenic,gpio-sleep-pulldown 	= <>;
+	ingenic,gpio-sleep-hiz		= <>;
+	ingenic,gpio-sleep-low		= <>;
+	ingenic,gpio-sleep-high		= <>;
+	ingenic,gpio-sleep-wakeup	= <>;
+};
+
+&gpb {
+	ingenic,gpio-sleep-pullup 	= <>;
+	ingenic,gpio-sleep-pulldown 	= <>;
+	ingenic,gpio-sleep-hiz		= <>;
+	ingenic,gpio-sleep-low		= <>;
+	ingenic,gpio-sleep-high		= <>;
+	ingenic,gpio-sleep-wakeup	= <>;
+};
+
+&gpc {
+	ingenic,gpio-sleep-pullup 	= <>;
+	ingenic,gpio-sleep-pulldown 	= <>;
+	ingenic,gpio-sleep-hiz		= <>;
+	ingenic,gpio-sleep-low		= <>;
+	ingenic,gpio-sleep-high		= <>;
+	ingenic,gpio-sleep-wakeup	= <>;
+};
+
+&gpd {
+	ingenic,gpio-sleep-pullup 	= <>;
+	ingenic,gpio-sleep-pulldown 	= <>;
+	ingenic,gpio-sleep-hiz		= <>;
+	ingenic,gpio-sleep-low		= <>;
+	ingenic,gpio-sleep-high		= <>;
+	ingenic,gpio-sleep-wakeup	= <>;
+};
+
+&gpe {
+	ingenic,gpio-sleep-pullup 	= <>;
+	ingenic,gpio-sleep-pulldown 	= <>;
+	ingenic,gpio-sleep-hiz		= <>;
+	ingenic,gpio-sleep-low		= <>;
+	ingenic,gpio-sleep-high		= <>;
+	ingenic,gpio-sleep-wakeup	= <>;
+};

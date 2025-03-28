@@ -1,0 +1,65 @@
+&i2c3 {
+	status = "okay";
+	clock-frequency = <100000>;
+	timeout = <1000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c3_pa>;
+
+	/*RD_X2000_HALLEY5_CAMERA_V7.0 MIPI ir interface*/
+	gc2053_0:gc2053@37 {
+		status = "ok";
+		compatible = "galaxy,gc2053";
+		reg = <0x37>;
+		pinctrl-names = "default";
+	//	pinctrl-0 = <&cim1_vic_mclk_pc>;
+		ingenic,mclk = <1>;
+
+		ingenic,rst-gpio = <&gpa 4 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+		ingenic,pwdn-gpio = <&gpa 2 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+	//	ingenic,led-gpio = <&gpb 3 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+
+		port {
+			gc2053_ep0:endpoint {
+				remote-endpoint = <&isp0_ep>;
+			};
+		};
+	};
+};
+&i2c0 {
+	status = "okay";
+	clock-frequency = <100000>;
+	timeout = <1000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c0_pa>;
+
+	/*RD_X2000_HALLEY5_CAMERA_V7.0 MIPI rgb interface*/
+	gc2053_1:gc2053@37 {
+		status = "ok";
+		compatible = "galaxy,gc2053";
+		reg = <0x37>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&cim1_vic_mclk_pc>;
+		ingenic,mclk = <1>;
+
+		ingenic,rst-gpio = <&gpa 0 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+		ingenic,pwdn-gpio = <&gpa 9 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+//		ingenic,led-gpio = <&gpb 4 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+
+		port {
+			gc2053_ep1:endpoint {
+				remote-endpoint = <&isp1_ep>;
+			};
+		};
+	};
+};
+&isp0_ep {
+	remote-endpoint = <&gc2053_ep0>;
+	data-lanes = <0 1>;
+	clk-lanes = <2>;
+};
+&isp1_ep {
+	remote-endpoint = <&gc2053_ep1>;
+	data-lanes = <3 4>;
+	clk-lanes = <5>;
+};
+

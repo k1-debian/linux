@@ -1,0 +1,15 @@
+choice
+	prompt "device tree select for AD100 boards"
+	depends on SOC_AD100
+
+config DT_AD100_MODULE_BASE
+	bool "ad100 module base"
+
+endchoice
+
+config DT_AD100_MODULE_BASE_DTS_FILE
+	string "dts file for ad100 module driver"
+	depends on DT_AD100_MODULE_BASE
+	default "ad100_module_base.dts"
+	help
+		the dts file location is module_drivers/dts/

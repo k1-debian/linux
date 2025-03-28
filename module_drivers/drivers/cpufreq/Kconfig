@@ -1,0 +1,19 @@
+config X2000_CPUFREQ
+	tristate "x2000 CPUFreq Driver"
+	depends on SOC_X2000 || SOC_X2100
+	select  PM_OPP
+	select	CPU_FREQ
+	select  CPU_FREQ_STAT
+	select  CPU_FREQ_DEFAULT_GOV_PERFORMANCE
+	select  CPU_FREQ_GOV_POWERSAVE
+	select  CPU_FREQ_GOV_USERSPACE
+	select  CPU_FREQ_GOV_ONDEMAND
+	select  CPU_FREQ_GOV_CONSERVATIVE
+	select  CPU_FREQ_GOV_SCHEDUTIL
+	help
+	  This option adds a CPUFreq driver for ingenic processors which
+	  support software configurable cpu frequency.
+
+	  X2000 and it's successors support this feature.
+
+	  For details, take a look at <file:Documentation/cpu-freq/>.

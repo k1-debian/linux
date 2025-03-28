@@ -1,0 +1,36 @@
+
+config INGENIC_MCU_RPROC
+    tristate "ingenic mcu remoteproc support"
+    depends on HAS_DMA
+    select REMOTEPROC
+    default n
+    help
+      Say y or m here to support ingenic mcu remoteproc.
+      This can be either built-in or a loadable module.
+      This module needs to be used with the mcu-host application.
+      If unsure say N.
+
+config INGENIC_MCU_IPC
+    bool "mcu Inter-processor communication support"
+    depends on INGENIC_MCU_RPROC
+    select INGENIC_RPROC_IPC
+    help
+      Say y or m here to support mcu Inter-processor communication with xburst2.
+
+config INGENIC_RISCV_RPROC
+    tristate "ingenic riscv remoteproc support"
+    depends on SOC_X2500 || SOC_X2600
+    select REMOTEPROC
+    default n
+
+config INGENIC_RISCV_IPC
+    bool "riscv Inter-processor communication support"
+    depends on INGENIC_RISCV_RPROC
+    select INGENIC_RPROC_IPC
+    help
+      Say y or m here to support riscv Inter-processor communication with xburst2.
+
+config INGENIC_RPROC_IPC
+    bool
+    default n
+    depends on INGENIC_MCU_IPC || INGENIC_RISCV_IPC

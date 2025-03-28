@@ -1,0 +1,13 @@
+
+comment "USB Miscellaneous drivers"
+
+if USB
+config USB_LOADER
+	tristate "USB LOADER Driver"
+	help
+	  Say Y here if you want to load firmware to another Ingenic Chip via usbboot.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called usbloader.
+
+endif #USB

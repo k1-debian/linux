@@ -1,0 +1,12 @@
+config INGENIC_VO
+	tristate "[VO] ingenic VO bt1120 output"
+	depends on SOC_X2500 && FB
+	select FB_CFB_FILLRECT
+	select FB_CFB_COPYAREA
+	select FB_CFB_IMAGEBLIT
+	select FB_SYS_FOPS
+	default n
+	help
+		this driver is used for VO module, which support bt1120 output as a framebuffer driver.
+
+

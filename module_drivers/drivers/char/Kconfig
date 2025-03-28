@@ -1,0 +1,43 @@
+config INGENIC_CDBUS
+	bool "[CDBUS] Ingenic Cdbus Driver"
+	depends on SOC_X1600
+	default y
+	help
+		Say Y here if you want to use cdbus communication function.
+		when in doubt , Say N here.
+
+config INGENIC_NEMC
+	bool "[NEMC] Ingenic Nemc Driver"
+	default n
+	help
+		Say Y here if you want to use cdbus communication function.
+		when in doubt , Say N here.
+
+config INGENIC_PWM_AUDIO
+	bool "[PWM-AUDIO] Ingenic Pwm Audio Driver"
+	depends on PWM_INGENIC_V3
+	default n
+	help
+		Say Y here if you want to use pwm audio function.
+		when in doubt , Say N here.
+
+config INGENIC_PWM_SMC
+	bool "[PWM-SMC] Ingenic Pwm SMC Driver"
+	depends on PWM_INGENIC_V3
+	default n
+	help
+		Say Y here if you want to use pwm scan function.
+		when in doubt , Say N here.
+
+config INGENIC_HW_RANDOM
+        tristate "[RANDOM] Ingenic Random Driver"
+        depends on MIPS
+        help
+         This driver provides kernel-side support for the Random Number
+         Generator hardware found on Ingenic processors.
+
+         To compile this driver as a module, choose M here: the
+         module will be called ingenic-rng.
+
+         If unsure, say N.
+

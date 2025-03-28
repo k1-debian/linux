@@ -1,0 +1,29 @@
+&i2c0 {
+	status = "okay";
+	clock-frequency = <100000>;
+	timeout = <1000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c0_pa>;
+
+	/*BT1120 sensor*/
+	bt1120:bt1120@24 {
+		status = "ok";
+		compatible = "ovti,bt1120";
+		reg = <0x24>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&vic_pa_16bit>;
+
+		port {
+			bt1120_ep0:endpoint {
+				remote-endpoint = <&isp0_ep>;
+			};
+		};
+	};
+
+};
+
+&isp0_ep {
+	remote-endpoint = <&bt1120_ep0>;
+	bus-width = <16>;
+};
+

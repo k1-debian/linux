@@ -1,0 +1,26 @@
+menuconfig FB_INGENIC_STAGE_WIP
+	tristate "Ingenic Framebuffer Driver for stage wip"
+	depends on FB_INGENIC
+	select FB_INGENIC_DISPLAYS_STAGE_WIP
+	select FB_CFB_FILLRECT
+	select FB_CFB_COPYAREA
+	select FB_CFB_IMAGEBLIT
+	help
+	  Framebuffer support for the Version 12 DPU SoC.
+
+config HW_COMPOSER_V4L2_M2M
+	bool "support composer v4l2mem device"
+	depends on FB_INGENIC_STAGE_WIP
+	select V4L2_MEM2MEM_DEV
+	select VIDEOBUF2_DMA_CONTIG_INGENIC
+	default n
+	help
+		This config composer use for v4l2 device
+
+config FB_USING_CACHABLE
+	bool "using cacheable framebuffers, will flush cache when call pan_display."
+	depends on FB_INGENIC_STAGE_WIP
+	default n
+	help
+		Using Cacheable mmap to userspace.
+
