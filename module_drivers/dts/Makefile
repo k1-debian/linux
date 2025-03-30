@@ -6,6 +6,7 @@ dtb-$(CONFIG_DT_GEWU_V12)		+= m300/gewu_v12.dtb
 dtb-$(CONFIG_DT_HALLEY5_V30)		+= x2000/halley5_v30.dtb
 dtb-$(CONFIG_DT_ZEBRA)			+= x2000/zebra.dtb
 dtb-$(CONFIG_DT_KALE_V10)		+= x2000/kale_v10.dtb
+dtb-$(CONFIG_DT_CREALITY_K1)		+= x2000/creality_k1.dtb
 dtb-$(CONFIG_DT_HIPPO_V12)		+= x2500/hippo_v12.dtb
 
 
