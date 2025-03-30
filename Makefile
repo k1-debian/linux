@@ -391,7 +391,7 @@ include $(srctree)/scripts/subarch.include
 # Default value for CROSS_COMPILE is not to prefix executables
 # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
 ARCH		?= mips
-CROSS_COMPILE   ?= mipsel-linux-gnu-
+CROSS_COMPILE   ?= mipsel-linux-
 
 # Architecture as present in compile.h
 UTS_MACHINE 	:= $(ARCH)
