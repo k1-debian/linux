@@ -250,3 +250,9 @@ config STAGE_JD9365DA
 	depends on FB_INGENIC_DISPLAYS_STAGE
     help
         lcd panel JD9365DA, for ingenicfb drivers
+
+config STAGE_ST7701_DC_480X800
+    tristate "lcd st7701 dc 480x800"
+	depends on FB_INGENIC_DISPLAYS_STAGE
+    help
+        lcd panel Creality K1, for ingenicfb drivers
