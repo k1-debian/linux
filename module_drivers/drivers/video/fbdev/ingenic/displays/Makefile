@@ -39,4 +39,11 @@ obj-$(CONFIG_STAGE_AXS15231B) += panel-axs15231b.o
 obj-$(CONFIG_STAGE_JYM1019603281BC) += panel-jym1019603281bc.o
 obj-$(CONFIG_STAGE_JD9365DA) += panel-jd9365da.o
 obj-$(CONFIG_STAGE_ZC50289HSHD02) += panel-zc50289hshd02.o
-obj-$(CONFIG_STAGE_ST7701_DC_480X800) += panel-st7701-dc-480x800.o
+obj-$(CONFIG_STAGE_CREALITY_LCD) += creality_lcd/panel-creality-lcd.o \
+	creality_lcd/lcd-gc9503cv-ue.o \
+	creality_lcd/lcd-st7701-tjc.o \
+	creality_lcd/lcd-st7701-pj.o \
+	creality_lcd/lcd-st7701-dc.o \
+	creality_lcd/lcd-st7701-tjc-lc.o \
+	creality_lcd/lcd-st7701-pj-lc.o \
+	creality_lcd/lcd-st7701-dc-lc.o

@@ -20,7 +20,7 @@
 	memory-region=<&reserved_memory>;
 	port {
 		dpu_out_ep: endpoint {
-			remote-endpoint = <&panel_st7701_dc_480x800_ep>;
+			remote-endpoint = <&panel_creality_lcd_ep>;
 		};
 	};
 };
@@ -39,10 +39,10 @@
 		ranges =<>;
 
 		reserved_memory: reserved_mem@6000000{
-		      compatible = "shared-dma-pool";
-		      reg-64M = <0x03000000 0x1000000>;
-		      reg-128M = <0x06000000 0x2000000>;
-		      reg-256M = <0x0e000000 0x2000000>;
+			compatible = "shared-dma-pool";
+			reg-64M = <0x03000000 0x1000000>;
+			reg-128M = <0x07000000 0x1000000>;
+			reg-256M = <0x0f000000 0x1000000>;
 		};
 	};
 
@@ -52,20 +52,21 @@
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges = <>;
-		panel_st7701_dc_480x800 {
-			compatible = "ingenic,st7701_dc_480x800";
+		panel_creality_lcd {
+			compatible = "ingenic,creality_lcd";
 			status = "okay";
 			pinctrl-names = "default";
 			pinctrl-0 = <&tft_lcd_pb_rgb565>;
 
 			ingenic,vdd-en-gpios = <&gpc 21 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
 			ingenic,rst-gpios = <&gpb 29 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
-			ingenic,lcd-sda-gpios = <&gpc 28 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+			ingenic,lcd-sdi-gpios = <&gpb 16 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+			ingenic,lcd-sdo-gpios = <&gpc 28 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
 			ingenic,lcd-sck-gpios = <&gpc 27 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
 			ingenic,lcd-cs-gpios = <&gpa 2 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
 
 			port {
-				panel_st7701_dc_480x800_ep: endpoint {
+				panel_creality_lcd_ep: endpoint {
 					remote-endpoint = <&dpu_out_ep>;
 				};
 			};
@@ -228,18 +229,26 @@
 };
 
 &felix {
-	status = "okay";
+	status = "disable";
 	memory-region=<&reserved_memory>;
 };
 
 &helix {
-	status = "okay";
+	status = "disable";
 	memory-region=<&reserved_memory>;
 };
 
 &rotate {
-	status = "okay";
+	status = "disable";
 	memory-region=<&reserved_memory>;
+};
+
+&mscaler0 {
+	status = "disable";
+};
+
+&mscaler1 {
+	status = "disable";
 };
 
 &pdma {
