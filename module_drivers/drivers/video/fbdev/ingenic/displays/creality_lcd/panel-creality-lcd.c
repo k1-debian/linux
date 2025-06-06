@@ -193,7 +193,7 @@ static struct lcd_panel_ops panel_ops = {
 static struct fb_videomode panel_modes[] = {
 	[0] = {
 		.name                   = "480x800",
-		.refresh                = 50,
+		.refresh                = 30,
 		.xres                   = 480,
 		.yres                   = 800,
 		.pixclock               = 0,
@@ -247,9 +247,18 @@ static void detect_panel(struct lcd_device *lcd)
 			dev_notice(dev,"LCD model detected: %s", detected_panel->name);
 			return;
 		}
-	}	
+	}
+
+	//LCD Not detected, set default and try to read known ID registers and print them
+	detected_panel = &panel_models_list[1];
+	dev_notice(dev, "LCD model detection failed. Using default: %s", detected_panel->name);
 	
-	dev_err(dev, "LCD model detection failed.");
+	uint8_t buffer[5];
+	SPI_ReadData(0xa1, buffer, 5);
+	dev_notice(dev, "0xa1 register: %*ph\n", 5, buffer);
+
+	SPI_ReadData(0x04, buffer, 3);
+	dev_notice(dev, "0x04 register: %*ph\n", 3, buffer);
 }
 
 #define POWER_IS_ON(pwr)        ((pwr) <= FB_BLANK_NORMAL)

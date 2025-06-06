@@ -5,27 +5,6 @@
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <generated/autoconf.h>
 
-&dpu {
-	status = "okay";
-	ingenic,disable-rdma-fb = <1>;
-	ingenic,layer-exported  = <1 0 0 0>;
-	ingenic,layer-frames    = <2 2 2 2>;
-	ingenic,layer-framesize = <480 800>, <480 800>, <480 800>, <480 800>;   //Max framesize for each layer.
-	layer,color_mode        = <0 0 0 0>;                                    //src fmt,
-	layer,src-size          = <480 800>, <480 800>, <480 800>, <480 800>;   //Layer src size should smaller than framesize
-	layer,target-size       = <480 800>, <480 800>, <480 800>, <480 800>;   //Target Size should smaller than src_size.
-	layer,target-pos        = <0 0>, <0 0>, <0 0>, <0 0>;                   //target pos , the start point of the target panel.
-	layer,enable            = <1 0 0 0>;                                    //layer enabled or disabled.
-	ingenic,logo-pan-layer  = <0>;                                          //on which layer should init logo pan on.
-	memory-region=<&reserved_memory>;
-	port {
-		dpu_out_ep: endpoint {
-			remote-endpoint = <&panel_creality_lcd_ep>;
-		};
-	};
-};
-
-
 / {
 	compatible = "ingenic,crealityk1", "ingenic,x2000";
 
@@ -36,7 +15,7 @@
 	reserved-memory {
 		#address-cells = <1>;
 		#size-cells = <1>;
-		ranges =<>;
+		ranges = <>;
 
 		reserved_memory: reserved_mem@6000000{
 			compatible = "shared-dma-pool";
@@ -92,6 +71,24 @@
 		regulator-boot-on;
 	};
 
+	usb_host_5v_a: usb-host-5v-a {
+		compatible = "regulator-fixed";
+		regulator-name = "usb_host_5v_a";
+		gpio = <&gpa 14 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+		enable-active-high;
+		regulator-always-on;
+		regulator-boot-on;
+	};
+
+	usb_host_5v_b: usb-host-5v-b {
+		compatible = "regulator-fixed";
+		regulator-name = "usb_host_5v_b";
+		gpio = <&gpa 16 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+		enable-active-high;
+		regulator-always-on;
+		regulator-boot-on;
+	};
+
 	leds {
 		compatible = "gpio-leds";
 		status = "okay";
@@ -105,8 +102,32 @@
 	};
 };
 
+&dpu {
+	status = "okay";
+	ingenic,disable-rdma-fb = <1>;
+	ingenic,layer-exported  = <1 0 0 0>;
+	ingenic,layer-frames    = <2 2 2 2>;
+	ingenic,layer-framesize = <480 800>, <480 800>, <480 800>, <480 800>;   //Max framesize for each layer.
+	layer,color_mode        = <0 0 0 0>;                                    //src fmt,
+	layer,src-size          = <480 800>, <480 800>, <480 800>, <480 800>;   //Layer src size should smaller than framesize
+	layer,target-size       = <480 800>, <480 800>, <480 800>, <480 800>;   //Target Size should smaller than src_size.
+	layer,target-pos        = <0 0>, <0 0>, <0 0>, <0 0>;                   //target pos , the start point of the target panel.
+	layer,enable            = <1 0 0 0>;                                    //layer enabled or disabled.
+	ingenic,logo-pan-layer  = <0>;                                          //on which layer should init logo pan on.
+	memory-region=<&reserved_memory>;
+	port {
+		dpu_out_ep: endpoint {
+			remote-endpoint = <&panel_creality_lcd_ep>;
+		};
+	};
+};
+
 &uart0 {
 	status = "disable";
+};
+
+&uart1_pc {
+	ingenic,pinmux = <&gpc 23 24>;
 };
 
 &uart1 {
@@ -185,10 +206,6 @@
 	};	
 };
 
-&uart1_pc {
-	ingenic,pinmux = <&gpc 23 24>;
-};
-
 &i2c2 {
 	status = "okay";
 	pinctrl-names = "default";
@@ -200,7 +217,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c4_pc>;
 
-	goodix@14{
+	goodix@14 {
 		compatible = "goodix,gt9xx"; /* do not modify */
 		reg = <0x14>; /* do not modify */
 		reset-gpios = <&gpa 0 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>; /* RST pin */
