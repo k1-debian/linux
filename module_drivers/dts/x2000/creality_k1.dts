@@ -98,6 +98,7 @@
 			gpios = <&gpa 13 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
 			linux,default-trigger = "heartbeat";
 			default-state = "off";
+			panic-indicator;
 		};
 	};
 };
