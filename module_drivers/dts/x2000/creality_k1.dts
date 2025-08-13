@@ -71,6 +71,13 @@
 		regulator-boot-on;
 	};
 
+	wifi_pwrseq: wifi-pwrseq {
+		compatible = "mmc-pwrseq-simple";
+		reset-gpios = <&gpe 2 GPIO_ACTIVE_LOW INGENIC_GPIO_NOBIAS>;
+		post-power-on-delay-ms = <200>;
+		power-off-delay-ms = <5>;
+	};
+
 	usb_host_5v_a: usb-host-5v-a {
 		compatible = "regulator-fixed";
 		regulator-name = "usb_host_5v_a";
@@ -248,17 +255,14 @@
 
 &felix {
 	status = "disable";
-	memory-region=<&reserved_memory>;
 };
 
 &helix {
 	status = "disable";
-	memory-region=<&reserved_memory>;
 };
 
 &rotate {
 	status = "disable";
-	memory-region=<&reserved_memory>;
 };
 
 &mscaler0 {
@@ -287,25 +291,31 @@
 
 &msc1 {
 	status = "okay";
-	pinctrl-names ="default", "enable", "disable";
+	pinctrl-names = "default", "enable", "disable";
 	pinctrl-0 = <&msc1_4bit>;
 	pinctrl-1 = <&rtc32k_enable>;
 	pinctrl-2 = <&rtc32k_disable>;
 
-	max-frequency = <100000000>;
 	bus-width = <4>;
-	voltage-ranges = <1800 3300>;
 	non-removable;
-
-	ingenic,sdio_clk = <1>;
 	keep-power-in-suspend;
 
-	ingenic,removal-manual; /*removal-dontcare, removal-nonremovable, removal-removable, removal-manual*/
+	max-frequency = <100000000>;
+	voltage-ranges = <1800 3300>;
+	
+	mmc-pwrseq = <&wifi_pwrseq>;
 
-	bcmdhd_wlan: bcmdhd_wlan {
-		 compatible = "android,bcmdhd_wlan";
-		 gpio_wl_reg_on = <&gpe 2 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;		 
-		 gpio_wl_host_wake = <&gpd 5 GPIO_ACTIVE_HIGH INGENIC_GPIO_NOBIAS>;
+	wifi@1 {
+		reg = <1>;
+		compatible = "brcm,bcm43430a1";
+
+		interrupt-parent = <&gpd>;
+		interrupts = <5 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-names = "host-wake";
+
+		wakeup-source;
+
+		brcm,board-type = "AP6212";
 	};
 };
 
@@ -327,7 +337,10 @@
 };
 
 &otg {
-	g-use-dma;
+	status = "okay";
+};
+
+&rtc {
 	status = "okay";
 };
 
