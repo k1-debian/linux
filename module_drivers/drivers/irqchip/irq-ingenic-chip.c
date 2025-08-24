@@ -364,17 +364,17 @@ static int __init ingenic_intc_of_init(struct device_node *node)
 	irq_chips->irq = irq;
 
 	of_property_for_each_u32(node, "cpu-intc-map", prop, vp, pv) {
-		if (index % 2) {
-			cpu_intc_map[index / 2].dev_base = (unsigned int)iobase + pv;
-		} else {
-			cpu_intc_map[index / 2].cpu_num = pv;
+		if (index >= NR_CPUS * 2) {
+		printk("parse cpu-intc-iomap, intc define in dt is too large!\n");
+		break;
 		}
 
-		index ++;
-		if (index > NR_CPUS * 2 - 1) {
-			printk("parse cpu-intc-iomap, intc define in dt is too large!\n");
-			break;
+		if (index % 2) {
+		cpu_intc_map[index / 2].dev_base = (unsigned int)iobase + pv;
+		} else {
+		cpu_intc_map[index / 2].cpu_num = pv;
 		}
+		index++;
 	}
 
 	core_irq_setup(irq_chips);

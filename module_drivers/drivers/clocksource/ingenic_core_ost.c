@@ -504,16 +504,16 @@ static int __init ingenic_ost_init(struct device_node *np)
 	}
 
 	of_property_for_each_u32(np, "cpu-ost-map", prop, vp, pv) {
-		if (index % 2) {
-			cpu_ost_map[index / 2].dev_base = (unsigned int)core_iobase + pv;
-		} else {
-			cpu_ost_map[index / 2].cpu_num = pv;
-		}
-		index ++;
-		if (index > NR_CPUS * 2 - 1) {
-			printk("parse cpu-ost-iomap, ost number define in dt is too large!\n");
-			break;
-		}
+	        if (index >= NR_CPUS * 2) {
+	            printk("parse cpu-ost-iomap, ost number define in dt is too large!\n");
+	            break;
+	        }
+	        if (index % 2) {
+	            cpu_ost_map[index / 2].dev_base = (unsigned int)core_iobase + pv;
+	        } else {
+	            cpu_ost_map[index / 2].cpu_num = pv;
+	        }
+	        index++;
 	}
 
 	ext_clk = clk_get(NULL, "ext");
