@@ -46,7 +46,7 @@
 			device_type = "cpu";
 			compatible = "ingenic,xburst2";
 			reg = <0x000>;
-			clock-frequency = <800000000>;
+			clock-frequency = <1200000000>;
 			cpu-idle-states = <&CPU_IDLE_PD>;
 		};
 
@@ -55,7 +55,7 @@
 			compatible = "ingenic,xburst2";
 			reg = <0x001>;
 			cpu-idle-states = <&CPU_IDLE_PD>;
-			clock-frequency = <800000000>;
+			clock-frequency = <1200000000>;
 		};
 
 		idle-states {
@@ -155,16 +155,16 @@
 			status = "ok";
 		};
 
-		tcu: tcu@10002000 {
-			compatible = "ingenic,tcu";
-			reg = <0x10002000 0x1000>;
-			interrupt-parent = <&core_intc>;
-			interrupt-names = "default";
-			interrupts = <IRQ_TCU0>;
-			clocks = <&clock CLK_GATE_TCU>;
-			clock-names = "gate_tcu";
-			status = "ok";
-		};
+        tcu: tcu@10002000 {
+            compatible = "ingenic,tcu";
+            reg = <0x10002000 0x1000>;
+            interrupt-parent = <&core_intc>;
+            interrupts = <IRQ_TCU0 IRQ_TCU1 IRQ_TCU2>;
+            interrupt-names = "tcu0", "tcu1", "tcu2";
+            clocks = <&clock CLK_GATE_TCU>;
+            clock-names = "gate_tcu";
+            status = "ok";
+        };
 
 		watchdog: watchdog@10002000 {
 			compatible = "ingenic,watchdog";
@@ -419,8 +419,8 @@
 			interrupts = <IRQ_SSI0>;
 			clocks = <&clock CLK_GATE_SSI0> , <&clock CLK_DIV_SSI>;
 			clock-names = "gate_ssi0", "div_ssi";
-			dmas = <&pdma INGENIC_DMA_TYPE(INGENIC_DMA_REQ_SSI0_TX)>,
-				   <&pdma INGENIC_DMA_TYPE(INGENIC_DMA_REQ_SSI0_RX)>;
+			dmas = <&pdma 0 INGENIC_DMA_TYPE(INGENIC_DMA_REQ_SSI0_TX)>,
+				   <&pdma 1 INGENIC_DMA_TYPE(INGENIC_DMA_REQ_SSI0_RX)>;
 			dma-names = "tx", "rx";
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -434,8 +434,8 @@
 			interrupts = <IRQ_SSI1>;
 			clocks = <&clock CLK_GATE_SSI1> , <&clock CLK_DIV_SSI>;
 			clock-names = "gate_ssi1", "div_ssi";
-			dmas = <&pdma INGENIC_DMA_TYPE(INGENIC_DMA_REQ_SSI1_TX)>,
-				   <&pdma INGENIC_DMA_TYPE(INGENIC_DMA_REQ_SSI1_RX)>;
+			dmas = <&pdma 0 INGENIC_DMA_TYPE(INGENIC_DMA_REQ_SSI1_TX)>,
+				   <&pdma 1 INGENIC_DMA_TYPE(INGENIC_DMA_REQ_SSI1_RX)>;
 			dma-names = "tx", "rx";
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -647,24 +647,18 @@
 		};
 
 		pdma: dma@13420000 {
-			compatible = "ingenic,x2000-pdma";
-			reg = <0x13420000 0x10000>;
-			interrupt-parent = <&core_intc>;
-			interrupt-names = "pdma", "pdmad";
-			interrupts = <IRQ_PDMA>, <IRQ_PDMAD>;
-			#dma-channels = <32>;
-			#dma-cells = <1>;
-			ingenic,reserved-chs = <0x3>;
-		};
-
-		mcu: mcu@13420000 {
-			compatible = "ingenic,x2000-mcu";
-			reg = <0x13420000 0x10000>;
-			interrupt-parent = <&core_intc>;
-			interrupt-names = "pdmam";
-			interrupts = <IRQ_PDMAM>;
-			ingenic,tcsm_size = <16384>;
-		};
+            compatible = "ingenic,x2000-pdma";
+            reg = <0x13420000 0x400>, <0x13421000 0x40>;
+            interrupt-parent = <&core_intc>;
+            interrupts = <IRQ_PDMA>, <IRQ_PDMAD>, <IRQ_PDMAM>;
+            interrupt-names = "pdma", "pdmad", "pdmam";
+            #dma-cells = <2>;
+            ingenic,bus-ctrl = <0>;
+            ingenic,reserved-chs = <0x3>;
+            clocks = <&clock CLK_GATE_PDMA>;
+            clock-names = "pclk";
+            status = "okay";		
+        };
 
 		pwm: pwm@134c0000 {
 			compatible = "ingenic,x2000-pwm";
