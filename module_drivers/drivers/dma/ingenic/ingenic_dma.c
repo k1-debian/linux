@@ -860,9 +860,14 @@ static int ingenic_dma_terminate_all(struct dma_chan *chan)
 
 				if (dmac->sdesc->cyclic) {
 					/* direct disable dma transfer. */
-					writel(0, dmac->iomem + CH_DCS);
-					ingenic_dma_free_swdesc(&dmac->sdesc->vd);
-					dmac->sdesc = NULL;
+                    reinit_completion(&dmac->completion);
+                    dmac->sdesc->status = STAT_STOPPED;
+                    // Waiting for the current handle to terminate naturally
+                    writel(readl(dmac->iomem + CH_DCM) & ~DCM_LINK, dmac->iomem + CH_DCM);
+                    wait_for_completion_timeout(&dmac->completion, msecs_to_jiffies(100));
+                    writel(0, dmac->iomem + CH_DCS);  // Safe to stop
+                ingenic_dma_free_swdesc(&dmac->sdesc->vd);
+                dmac->sdesc = NULL;
 				}
 			}
 		} else if (readl(dmac->iomem + CH_DRT) != INGENIC_DMA_REQ_AUTO_TX) {
