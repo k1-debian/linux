@@ -129,7 +129,7 @@
 
 	pm: pm {
 		 compatible = "ingenic,x2000-pm";
-		 status = "disable"; /*pm fastboot use*/
+		 status = "disabled"; /*pm fastboot use*/
 	};
 
 	apb {
@@ -485,7 +485,7 @@
 		nemc: nemc@13410000{
 			compatible = "ingenic,x2000-nemc";
 			reg = <0x13410000 0x1000>;
-			status = "disable";
+			status = "disabled";
 			#address-cells = <2>;
 			#size-cells = <1>;
 			ranges = <1 0 0x1b000000 0x1000000
@@ -718,7 +718,7 @@
 			interrupts = <IRQ_CIM>;
 			clocks = <&clock CLK_DIV_CIM>, <&clock CLK_GATE_CIM>, <&clock CLK_GATE_MIPI_CSI>, <&clock CLK_GATE_CIM_MCLK>;
 			clock-names = "div_cim", "gate_cim", "gate_mipi", "gate_cim_mclk";
-			status = "disable";
+			status = "disabled";
 		};
 
 		simple_vic0: simple_vic@13710000 {
@@ -728,7 +728,7 @@
 			interrupts = <IRQ_VIC0>;
 			clocks = <&clock CLK_DIV_ISP>, <&clock CLK_GATE_ISP0> , <&clock POWER_ISP0>, <&clock CLK_GATE_MIPI_CSI>;
 			clock-names = "div_isp", "gate_isp0", "power_isp0", "gate_csi";
-			status = "disable";
+			status = "disabled";
 			vic_index = <0>;
 			mipi_iobase = <0x10074000 0x10073000 0x10076000>;
 
@@ -765,7 +765,7 @@
 			interrupts = <IRQ_VIC1>;
 			clocks = <&clock CLK_DIV_ISP>, <&clock CLK_GATE_ISP1> , <&clock POWER_ISP1>, <&clock CLK_GATE_MIPI_CSI>;
 			clock-names = "div_isp", "gate_isp1", "power_isp1", "gate_csi";
-			status = "disable";
+			status = "disabled";
 			vic_index = <1>;
 			mipi_iobase = <0x10074000 0x10073000 0x10076000>;
 
