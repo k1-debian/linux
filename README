@@ -1,18 +1,45 @@
-Linux kernel
-============
+## Компиляция
 
-There are several guides for kernel developers and users. These guides can
-be rendered in a number of formats, like HTML and PDF. Please read
-Documentation/admin-guide/README.rst first.
+cd ~/work/mips-x2000e/linux
 
-In order to build the documentation, use ``make htmldocs`` or
-``make pdfdocs``.  The formatted documentation can also be read online at:
+export TOOLCHAIN="$HOME/work/mips-x2000e/mips32r5el--glibc--bleeding-edge-2025.08-1"
+export PATH="$TOOLCHAIN/bin:$PATH"
+export CROSS_COMPILE=mipsel-linux-
+export ARCH=mips
 
-    https://www.kernel.org/doc/html/latest/
+make -j$(nproc) ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE
+make -j$(nproc) ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE uImage
 
-There are various text files in the Documentation/ subdirectory,
-several of them using the Restructured Text markup notation.
+make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE -j$(nproc) modules
+make ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE INSTALL_MOD_PATH=~/work/mips-x2000e/rootfs modules_install
 
-Please read the Documentation/process/changes.rst file, as it contains the
-requirements for building and running the kernel, and information about
-the problems which may result by upgrading your kernel.
+## Адреса загрузки ядра через uBoot
+
+loady 0x80f00000
+bootm 0x80f00000
+
+## Запись модулей
+
+tar -czf modules-6.6.18+.tar.gz 6.6.18+
+sudo tar -xzf modules-6.6.18+.tar.gz -C /lib/modules/
+
+sudo depmod -a $(uname -r)
+
+## Бэкап ядра
+
+sudo dd if=/home/printer/uImage.bin of=/dev/mmcblk0p3
+
+## Запись ядра
+
+# Заполняем раздел p3 нулями
+sudo dd if=/dev/zero of=/dev/mmcblk0p3 bs=4K
+
+# Записываем новый образ поверх нулей
+sudo dd if=/home/printer/uImage.gz of=/dev/mmcblk0p3
+
+# Синхронизация!
+sync
+
+## Драйвера wifi
+
+❯ sudo mv /lib/firmware/brcm/brcmfmac43430-sdio.AP6212.clm_blob /lib/firmware/brcm/brcmfmac43430-sdio.clm_blob.bak
