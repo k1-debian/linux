@@ -41,19 +41,19 @@ sudo dd if=/home/printer/uImage.bin of=/dev/mmcblk0p3
 
 ## Запись ядра
 
-# Заполняем раздел p3 нулями
+Заполняем раздел p3 нулями
 
 ```bash
 sudo dd if=/dev/zero of=/dev/mmcblk0p3 bs=4K
 ```
 
-# Записываем новый образ поверх нулей
+Записываем новый образ поверх нулей
 
 ```bash
 sudo dd if=/home/printer/uImage.gz of=/dev/mmcblk0p3
 ```
 
-# Синхронизация!
+Синхронизация!
 
 ```bash
 sync
