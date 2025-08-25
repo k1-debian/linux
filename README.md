@@ -61,4 +61,8 @@ sync
 
 ## Драйвера wifi
 
-❯ sudo mv /lib/firmware/brcm/brcmfmac43430-sdio.AP6212.clm_blob /lib/firmware/brcm/brcmfmac43430-sdio.clm_blob.bak
+Прошивки нового wi-fi драйвера хранятся в /lib/firmware/brcm/
+
+Nvram нового драйвера можно взять в https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/tree/brcm/brcmfmac43430-sdio.AP6212.txt
+
+Последнюю прошивку можно взять в https://github.com/Infineon/ifx-linux-firmware/tree/latest-v5.10/firmware
