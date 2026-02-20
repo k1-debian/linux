@@ -8,7 +8,18 @@
 / {
 	compatible = "ingenic,crealityk1", "ingenic,x2000";
 
-	extclk: extclk {
+	aliases: aliases {
+		serial1 = &uart1;
+		serial2 = &uart2;
+		serial3 = &uart3;
+		serial5 = &uart5;
+		serial7 = &uart7;
+		serial9 = &uart9;
+	};
+
+	refclk: refclk@0 {
+		#clock-cells = <0>;
+		compatible = "fixed-clock";
 		clock-frequency = <24000000>;
 	};
 
@@ -139,39 +150,69 @@
 };
 
 &uart1 {
+	compatible = "ingenic,x1000-uart";
+
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart1_pc>;
+
+	clocks = <&refclk>, <&clock CLK_GATE_UART1>;
+	clock-names = "baud", "module";	
 };
 
 &uart2 {
+	compatible = "ingenic,x1000-uart";
+
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart2_pd>;
+
+	clocks = <&refclk>, <&clock CLK_GATE_UART2>;
+	clock-names = "baud", "module";	
 };
 
 &uart3 {
+	compatible = "ingenic,x1000-uart";
+
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart3_pd>;
+
+	clocks = <&refclk>, <&clock CLK_GATE_UART3>;
+	clock-names = "baud", "module";	
 };
 
 &uart5 {
+	compatible = "ingenic,x1000-uart";
+
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart5_pa>;
+
+	clocks = <&refclk>, <&clock CLK_GATE_UART5>;
+	clock-names = "baud", "module";	
 };
 
 &uart7 {
+	compatible = "ingenic,x1000-uart";
+
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart7_pa>;
+
+	clocks = <&refclk>, <&clock CLK_GATE_UART7>;
+	clock-names = "baud", "module";	
 };
 
 &uart9 {
+	compatible = "ingenic,x1000-uart";
+
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart9_pb>;
+
+	clocks = <&refclk>, <&clock CLK_GATE_UART9>;
+	clock-names = "baud", "module";	
 };
 
 &cpufreq {
@@ -304,6 +345,9 @@
 	voltage-ranges = <1800 3300>;
 	
 	mmc-pwrseq = <&wifi_pwrseq>;
+
+	#address-cells = <1>;
+	#size-cells = <0>;
 
 	wifi@1 {
 		reg = <1>;
